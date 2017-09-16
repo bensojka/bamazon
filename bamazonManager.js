@@ -26,17 +26,19 @@ function uno() {
 inquirer.prompt([
   {
     type: 'list',
-    choices: ['View Products for Sale', 'View Low Inventory', 'Modify Inventory'],
+    choices: ['View Products for Sale', 'View Low Inventory', 'Modify Inventory', 'Add New Product'],
     name: 'action',
     message: 'Select an option to continue:'
   }
 ]).then(function(response) {
   if ( response.action === 'View Products for Sale' )
     readProducts();
-      else if ( response.action === 'View Low Inventory' ) 
-          lowInventory();
-      else if ( response.action === 'Modify Inventory' )
-          modifyInventory();
+  else if ( response.action === 'View Low Inventory' ) 
+      lowInventory();
+  else if ( response.action === 'Modify Inventory' )
+      modifyInventory();
+  else if ( response.action === 'Add New Product' )
+    newProduct();
 });
 }
 
@@ -147,8 +149,62 @@ function modifyInventory() {
   });
 }
 
+// function to handle posting new products
 function newProduct() {
-  nextMove();
+  // prompt for info about the product being added
+  inquirer
+    .prompt([
+      {
+        name: "product_name",
+        type: "input",
+        message: "What is the product you would like to add?"
+      },
+      {
+        name: "department_name",
+        type: "input",
+        message: "What department is the new product under?"
+      },
+      {
+        name: "price",
+        type: "input",
+        message: "What will the new product cost?",
+        validate: function(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        name: "stock_quantity",
+        type: "input",
+        message: "How much new product is being added to inventory?",
+        validate: function(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        }
+      }
+    ])
+    .then(function(answer) {
+      // when finished prompting, insert a new product into the db with that info
+      connection.query(
+        "INSERT INTO products SET ?",
+        {
+          product_name: answer.product_name,
+          department_name: answer.department_name,
+          price: answer.price,
+          stock_quantity: answer.stock_quantity
+        },
+        function(err) {
+          if (err) throw err;
+          console.log("Your new product was added successfully!");
+          // re-prompt the manager if they want to continue
+          nextMove();
+        }
+      );
+    });
 }
 
 function nextMove() {

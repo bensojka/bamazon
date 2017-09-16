@@ -125,13 +125,13 @@ function modifyInventory() {
             }
           );
         }
-        else if ((chosenItem.stock_quantity + parseInt()) <= 0) {
+        else if ((chosenItem.stock_quantity + quantity) <= 0) {
           // inventory will be set to zero
           connection.query(
               "UPDATE products SET ? WHERE ?",
               [
                 {
-                  stock_quantity: chosen_Item.stock_quantity + Number(quantity)
+                  stock_quantity: 0
                 },
                 {
                   item_id: chosenItem.item_id
@@ -139,11 +139,10 @@ function modifyInventory() {
               ],
               function(err) {
                 if (err) throw err;
-                console.log(answer.choice + " inventory has been increased");
+                console.log(answer.choice + " now has 0 items in inventory.");
                 nextMove();
               }
-            );
-          nextMove();
+          );
         }
       });
   });

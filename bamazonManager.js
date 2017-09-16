@@ -198,7 +198,7 @@ function newProduct() {
         },
         function(err) {
           if (err) throw err;
-          console.log("Your new product was added successfully!");
+          console.log(answer.product_name + " was added successfully!");
           // re-prompt the manager if they want to continue
           nextMove();
         }
